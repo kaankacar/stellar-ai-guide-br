@@ -10,7 +10,7 @@ This repo is a collection of guides put together by the SDF DevRel team to help 
 
 **Building with Brazilian real rails?** The regional starter pack (`Hackathon_Resources.md`) is the fastest path. For Brazil, use Etherfuse as the primary self-service path: BRL to TESOURO via PIX, with the same portable TypeScript anchor library you can drop into any Node project. Alfred Pay, Abroad Finance, and Transfero are relevant Brazil ecosystem references too, but the starter pack treats them as secondary/honorable-mention providers because they do not expose the same self-service developer flow as Etherfuse.
 
-**Don't have a paid AI subscription?** Start with `Free_AI_Setup.md`. It covers free API tiers, OpenRouter, Groq, Cerebras, Google AI Studio, NVIDIA NIM, xAI Grok credits, Hugging Face Spaces, free GPU notebooks, and local open-source models via Ollama.
+**Don't have a paid AI subscription?** Start with `Free_AI_Setup.md`. It now prioritizes free cloud options first: OpenRouter, Groq, Cerebras, Google AI Studio, NVIDIA NIM, xAI Grok credits, Hugging Face Spaces, free GPU notebooks, and startup credits. Local Ollama setup is still included, but it is intentionally at the end because most hackers should not spend the event fighting laptop inference.
 
 **About to write code?** Read `Dev_Setup_Guide.md` first. Five minutes here saves hours later.
 
@@ -126,7 +126,7 @@ Full slash command reference, keyboard shortcuts, and CLI flags are in the file.
 
 | Tool | Free tier | Best for |
 |---|---|---|
-| Claude Code | Free via Ollama (see `Free_AI_Setup.md`) | Agentic terminal coding, full repo context |
+| Claude Code | Free via OpenRouter/Groq/Gemini or local Ollama (see `Free_AI_Setup.md`) | Agentic terminal coding, full repo context |
 | Continue | Fully free | VS Code/JetBrains, any local or cloud model |
 | Aider | Fully free | Terminal + Git, model-agnostic |
 | Cursor | 2,000 completions/mo | VS Code-like IDE with AI built in |
@@ -140,24 +140,23 @@ Full slash command reference, keyboard shortcuts, and CLI flags are in the file.
 
 ## Free_AI_Setup.md
 
-**Best free cloud option:** NVIDIA Nemotron 3 Super via OpenRouter — 120B params, 262K context window, $0/token, strong on SWE-Bench. Works directly with Claude Code (`claude --model nvidia/nemotron-3-super-120b-a12b:free`). No credit card required.
+**Best first move:** use the free cloud stack before trying local inference. OpenRouter, Groq, Cerebras, Google AI Studio, NVIDIA NIM, xAI Grok, Hugging Face Spaces, Kaggle, Colab, and Lightning AI give most teams enough AI access to build without a paid subscription or a high-end laptop.
 
-**Other free cloud APIs (no credit card):** Groq (Llama 3.1 8B at 14,400 req/day — fastest), Mistral Codestral (2,000 req/day, code-optimized), Google AI Studio (Gemini 2.5 Flash, 1M ctx), Cerebras, GitHub Models. All have Claude Code config snippets in the guide.
+**Claude Code without paying for Claude API:** The guide includes OpenAI-compatible Claude Code configs for OpenRouter, Groq, and Google AI Studio. For local use, it keeps Ollama instructions at the end with Devstral and `gpt-oss:20b` as the practical starting points.
 
-**Free trial credits ($1-$5):** SambaNova ($5 for 3 months), Scaleway (1M free tokens), Nebius, Hyperbolic, Fireworks. Enough for a full hackathon weekend.
+**Free trial credits and startup programs:** SambaNova, Scaleway, Nebius, Hyperbolic, Fireworks, AWS Activate, Google for Startups, Microsoft Founders Hub, and similar programs can cover a full hackathon weekend or an early demo if your project needs more hosted compute.
 
-**Open-source models you can run locally:**
+**Current practical open-source / open-weight models to know:**
 
-| Model | Best for | Min. VRAM |
+| Model family | Best for | Practical access |
 |---|---|---|
-| Qwen2.5-Coder-7B | Best all-round coding | 8 GB |
-| Llama 3.1 8B | Best Claude Code compatibility (tool-calling) | 10 GB |
-| Phi-4 (14B) | Low-end hardware, fast responses | 8 GB |
-| DeepSeek-Coder-V2-Lite | Algorithms, competitive coding | 16 GB |
-| Codestral (22B) | Inline autocomplete | 16 GB (quantized) |
-| StarCoder2-7B | Broad language support, open-source friendly | 14 GB |
-
-All of these run through **Ollama**, which installs in one command. The guide walks through the full setup in 8 steps.
+| Qwen3.5 / Qwen3-Coder-Next | Agentic coding, codebase edits, tool use | Hosted or smaller/GGUF local builds |
+| DeepSeek V4 | Hard reasoning, coding, long-context debugging | Hosted/VPS |
+| Kimi K2.5 | Agentic coding, multimodal/front-end work, long context | Hosted/VPS |
+| GLM-4.6 | Coding agents, polished frontend generation, long context | Hosted/VPS |
+| MiniMax M2.5 | SWE-bench-style coding, agentic tool use, full-stack tasks | Hosted/VPS |
+| Devstral | Local/near-local coding agent workflows | High-end laptop/GPU or VPS |
+| gpt-oss | Open-weight reasoning and agentic tasks | 20B local-ish; 120B VPS/cloud |
 
 **No GPU?** Rent a GPU server on RunPod (~$0.20/hr for an RTX 4090) or Vast.ai (~$0.15/hr). SSH-tunnel the port back and Claude Code sees it as if it were local. A full hackathon weekend costs $10-20.
 
