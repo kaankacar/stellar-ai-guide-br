@@ -8,7 +8,7 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Top Open-Source Coding Models on Hugging Face](#top-models)
+2. [Practical Open-Source Models for Hackathon Use](#top-models)
 3. [How to Use a Local Model with Claude Code](#claude-code-guide)
 4. [Running Your Model on a VPS](#vps-guide)
 5. [Free AI Coding Alternatives](#free-alternatives)
@@ -31,250 +31,175 @@ This guide focuses on helping you get set up with open-source models from Huggin
 
 <a id="top-models"></a>
 
-## 2. Top Open-Source Coding Models on Hugging Face
+## 2. Practical Open-Source Models for Hackathon Use
 
-Hugging Face (https://huggingface.co) is the central hub for open-source AI models. Below are the best coding-focused models available, ranked by overall capability and ease of local deployment.
+Hugging Face (https://huggingface.co) is the central hub for open-source AI models. The ranking below is intentionally **not** "largest model wins." Most hackers should not spend the event downloading and debugging a giant model. Start with something that runs, then move to a cloud/VPS model only if you need more capability.
+
+### Recommended Order
+
+| Rank | Model family | Best use | Local practicality |
+|---|---|---|---|
+| 1 | Llama 3.x / Llama 4 smaller variants | General coding help, planning, explanations, tool-calling | Best first try |
+| 2 | Phi-4 | Lower-end laptops, quick reasoning, small code tasks | Very practical |
+| 3 | Qwen3.5 / Qwen3-Coder-Next | Current Qwen generation; use smaller/GGUF variants locally | Good if you choose the right size |
+| 4 | DeepSeek V4 | Strong coding and reasoning, especially hosted | Usually VPS/cloud, not a laptop default |
+| 5 | Codestral | Code completion and fill-in-the-middle | Powerful but heavy |
+| 6 | StarCoder2 | Broad language support and open-source-friendly licensing | Useful fallback, less current |
+
+> Rule of thumb: if a model is 30B+ or MoE/frontier-sized, treat it as a cloud/VPS model unless you already know your machine can run it.
 
 
-### Model 1: Qwen2.5-Coder (by Alibaba / Qwen Team)
+### Model 1: Llama 3.x / Llama 4 Smaller Variants (Meta)
 
-**What it is:**
-Qwen2.5-Coder is a family of open-source code-specialized large language models developed by Alibaba's Qwen team. It is trained on 5.5 trillion tokens of code-related data, covering over 92 programming languages. It excels at code generation, completion, debugging, and explanation.
+**Why it is first:**
+For most hackers, Llama is the safest local starting point. It is good enough for project planning, code explanation, tests, debugging, and architecture questions. It is also one of the better choices when routing coding tools through a local model.
 
-**What it does:**
-- Generates complete functions and classes from natural language descriptions
-- Debugs and fixes broken code
-- Explains existing code in plain English
-- Supports Solidity, Rust, Python, JavaScript, TypeScript, Go, and many more languages relevant to blockchain development
+**Use it for:**
+- Explaining unfamiliar code
+- Planning a Stellar app architecture
+- Writing tests and README sections
+- Debugging TypeScript, Rust, Python, and API wiring
+- Running a local assistant when you do not have paid credits
 
-**Available sizes:**
+**Practical sizes:**
 | Model | Best For | Notes |
-|-------|----------|-------|
-| Qwen2.5-Coder-1.5B | Very low-end hardware | Lightweight, fast |
-| Qwen2.5-Coder-7B | Most laptops with a decent GPU | Best balance |
-| Qwen2.5-Coder-32B | High-end machines or VPS | Near state-of-the-art |
-
-**System Requirements:**
-
-| Model Size | Minimum VRAM (GPU) | Recommended RAM (CPU-only) |
 |---|---|---|
-| 1.5B | 4 GB VRAM | 8 GB RAM |
-| 7B | 8-10 GB VRAM | 16 GB RAM |
-| 32B | 24 GB VRAM | 64 GB RAM |
+| Llama 3.2 3B | Low-end laptops | Fast, weaker reasoning |
+| Llama 3.1 8B | Everyday local coding help | Best practical default |
+| Llama 3.3 70B / Llama 4 | VPS or hosted inference | Do not start here on a normal laptop |
 
-> Tip: Quantized (compressed) versions reduce memory needs by 50-75% with minimal quality loss. Always look for GGUF or AWQ versions if your hardware is limited.
-
-**Hugging Face page:** https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct
-
-**How to install (using Ollama - recommended method):**
-
+**Ollama:**
 ```bash
-# Step 1: Install Ollama (see Section 3 for full Ollama setup)
-# Step 2: Pull the model
-ollama pull qwen2.5-coder:7b
-
-# Or for the larger version:
-ollama pull qwen2.5-coder:32b
-
-# Step 3: Run it interactively
-ollama run qwen2.5-coder:7b
-```
-
-
-### Model 2: DeepSeek-Coder-V2 (by DeepSeek AI)
-
-**What it is:**
-DeepSeek-Coder-V2 is a powerful open-source coding model from the Chinese AI lab DeepSeek. It is a Mixture-of-Experts (MoE) model with 236 billion total parameters (but only 21 billion active at a time), achieving performance comparable to GPT-4o on coding benchmarks while remaining fully open and free.
-
-**What it does:**
-- Extremely strong at competitive programming problems
-- Handles multi-file code understanding
-- Supports 338 programming languages
-- Especially strong at math and algorithm problems
-
-**Available sizes:**
-| Model | Notes |
-|-------|-------|
-| DeepSeek-Coder-V2-Lite (16B active) | Suitable for local machines |
-| DeepSeek-Coder-V2 (21B active / 236B total) | Requires a VPS or multi-GPU server |
-
-**System Requirements:**
-
-| Model | Minimum VRAM | Notes |
-|-------|-------------|-------|
-| DeepSeek-Coder-V2-Lite | 16-24 GB VRAM | RTX 3090 or RTX 4090 |
-| DeepSeek-Coder-V2 | 80+ GB VRAM | Requires A100/H100 or multi-GPU |
-
-**Hugging Face page:** https://huggingface.co/deepseek-ai/DeepSeek-Coder-V2-Instruct
-
-**How to install:**
-
-```bash
-# Install via Ollama
-ollama pull deepseek-coder-v2
-
-# Run it
-ollama run deepseek-coder-v2
-```
-
-
-### Model 3: Codestral (by Mistral AI)
-
-**What it is:**
-Codestral is Mistral AI's dedicated code model. It has 22 billion parameters and was trained specifically for code generation and completion. It supports a very long context window (32,000 tokens), which means it can understand and work with large codebases at once.
-
-**What it does:**
-- Autocompletes code mid-function (fill-in-the-middle capability)
-- Generates code in 80+ programming languages
-- Works well as an inline coding assistant (similar to GitHub Copilot)
-- Strong performance on Solidity and smart contract code
-
-**System Requirements:**
-
-| Configuration | Requirement |
-|---|---|
-| Minimum VRAM (full precision) | 44 GB VRAM |
-| Recommended VRAM (quantized) | 16-24 GB VRAM |
-| CPU-only (quantized) | 32-64 GB RAM |
-
-**Hugging Face page:** https://huggingface.co/mistralai/Codestral-22B-v0.1
-
-**How to install:**
-
-```bash
-# Install via Ollama
-ollama pull codestral
-
-# Run it
-ollama run codestral
-```
-
-> Note: Codestral has a non-commercial license for local use. Check Mistral's license terms for commercial hackathon projects.
-
-
-### Model 4: StarCoder2 (by BigCode / Hugging Face)
-
-**What it is:**
-StarCoder2 is a family of open-source code models created by the BigCode project, a collaboration between Hugging Face and ServiceNow. It was trained transparently on permissively licensed code from GitHub, making it one of the most ethically sourced coding models available. It supports 600+ programming languages.
-
-**What it does:**
-- Code generation and completion
-- Code explanation and documentation
-- Supports an exceptionally wide range of programming languages
-- Well-suited for open-source and academic projects
-
-**Available sizes:**
-| Model | Notes |
-|-------|-------|
-| StarCoder2-3B | Runs on almost any modern laptop |
-| StarCoder2-7B | Best mid-range option |
-| StarCoder2-15B | Strongest in the family |
-
-**System Requirements:**
-
-| Model | Minimum VRAM | CPU-only RAM |
-|-------|-------------|--------------|
-| 3B | 6 GB VRAM | 8 GB RAM |
-| 7B | 14 GB VRAM | 16 GB RAM |
-| 15B | 30 GB VRAM | 32 GB RAM |
-
-**Hugging Face page:** https://huggingface.co/bigcode/starcoder2-15b
-
-**How to install:**
-
-```bash
-# Install via Ollama
-ollama pull starcoder2:7b
-
-# Run it
-ollama run starcoder2:7b
-```
-
-
-### Model 5: Llama 3.1 / 3.3 (by Meta)
-
-**What it is:**
-Meta's Llama 3 family are general-purpose open-source models that perform very well at coding tasks despite not being exclusively code-focused. Llama 3.1 (405B) and Llama 3.3 (70B) are among the strongest open-source models available for any task, including code.
-
-**What it does:**
-- Strong general reasoning that translates to better code quality
-- Excellent at explaining complex concepts and architectural decisions
-- Great for planning your project structure, writing tests, and debugging
-- Recommended for use with Claude Code due to best tool-calling compatibility
-
-**Available sizes:**
-| Model | Notes |
-|-------|-------|
-| Llama 3.2 3B | Very fast, runs on any laptop |
-| Llama 3.1 8B | Great for everyday coding tasks |
-| Llama 3.3 70B | Near-GPT-4 quality, needs good hardware |
-
-**System Requirements:**
-
-| Model | Minimum VRAM | CPU-only RAM |
-|-------|-------------|--------------|
-| 3B | 4 GB VRAM | 8 GB RAM |
-| 8B | 10 GB VRAM | 16 GB RAM |
-| 70B | 48 GB VRAM | 128 GB RAM |
-
-**Hugging Face page:** https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct
-
-**How to install:**
-
-```bash
-# Install via Ollama
 ollama pull llama3.1:8b
-
-# Or the larger version
-ollama pull llama3.3:70b
-
-# Run it
 ollama run llama3.1:8b
 ```
 
+**Reference:** https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct
 
-### Model 6: Phi-4 (by Microsoft)
 
-**What it is:**
-Microsoft's Phi-4 is a small but surprisingly capable model with only 14 billion parameters. It punches well above its weight class for coding and reasoning tasks, making it ideal for hackers with limited hardware.
+### Model 2: Phi-4 (Microsoft)
 
-**What it does:**
-- Strong mathematical and logical reasoning
-- Good code generation for Python, JavaScript, and TypeScript
-- Very fast inference speeds due to small size
-- Fits easily on most gaming laptops with a GPU
+**Why it is near the top:**
+Phi-4 is small enough to be realistic for many hackers while still being useful for coding, math, and reasoning. It is not the strongest model in absolute terms, but it is one of the easiest to actually run during a hackathon.
 
-**System Requirements:**
+**Use it for:**
+- Fast local help on lower-end hardware
+- Python, JavaScript, and TypeScript snippets
+- Debugging smaller files
+- Reasoning through API request/response shapes
 
-| Configuration | Requirement |
+**System requirements:**
+| Configuration | Practical expectation |
 |---|---|
-| Minimum VRAM | 8 GB VRAM |
-| Recommended VRAM | 12-16 GB VRAM |
-| CPU-only RAM | 16 GB RAM |
+| GPU | 8-16 GB VRAM is comfortable depending on quantization |
+| CPU-only | Usable with enough RAM, slower |
 
-**Hugging Face page:** https://huggingface.co/microsoft/phi-4
-
-**How to install:**
-
+**Ollama:**
 ```bash
-# Install via Ollama
 ollama pull phi4
-
-# Run it
 ollama run phi4
 ```
+
+**Reference:** https://huggingface.co/microsoft/phi-4
+
+
+### Model 3: Qwen3.5 / Qwen3-Coder-Next (Qwen Team)
+
+**What changed:**
+The older Qwen2.5-Coder recommendation is stale. Qwen's current generation is Qwen3.5, and the current coding-focused branch to watch is Qwen3-Coder-Next. The headline Qwen models are very large, so do not blindly download the biggest one. Look for smaller or quantized variants if you are running locally.
+
+**Use it for:**
+- Code generation and refactoring
+- Multi-file debugging
+- Agentic coding workflows
+- TypeScript, Python, Rust, and smart-contract-adjacent work
+
+**Practical choices:**
+| Model style | Best For | Notes |
+|---|---|---|
+| Qwen3.5 4B/9B or GGUF variants | Local laptops | Better practical target than giant models |
+| Qwen3-Coder-Next / Qwen3-Coder GGUF | Coding-focused local/VPS option | Use quantized builds if available |
+| Qwen3.5 122B+ / 397B+ | Frontier-size Qwen models | Hosted/cloud only for most teams |
+
+**References:**
+- https://huggingface.co/Qwen
+- https://huggingface.co/Qwen/Qwen3.5-122B-A10B-FP8
+- https://huggingface.co/Qwen/Qwen3-Coder-Next-FP8
+
+
+### Model 4: DeepSeek V4 (DeepSeek AI)
+
+**Why it moved down:**
+DeepSeek-Coder-V2 is stale as the named recommendation. DeepSeek V4 is the newer generation, with Flash and Pro variants. It is strong, but it is not a good default laptop recommendation; treat it as a hosted or VPS model unless you have serious hardware.
+
+**Use it for:**
+- Algorithmic coding tasks
+- Hard debugging sessions
+- Large-context code reasoning
+- Cloud/VPS experiments when free/local models are not enough
+
+**Practical choices:**
+| Model | Notes |
+|---|---|
+| DeepSeek V4 Flash | Faster/cheaper hosted option |
+| DeepSeek V4 Pro | Stronger hosted option |
+| DeepSeek-Coder-V2 | Older fallback if V4 is unavailable |
+
+**Reference:** https://huggingface.co/docs/transformers/main/model_doc/deepseek_v4
+
+
+### Model 5: Codestral (Mistral AI)
+
+**Why it moved down:**
+Codestral is useful for code completion and fill-in-the-middle workflows, but it is heavy for local use and its license needs attention for commercial projects.
+
+**Use it for:**
+- Inline code completion
+- Generating and editing functions
+- Larger context code tasks when you have enough hardware
+
+**Practical note:**
+Use Codestral through a hosted provider unless you already have a high-memory GPU setup.
+
+**Reference:** https://huggingface.co/mistralai/Codestral-22B-v0.1
+
+
+### Model 6: StarCoder2 (BigCode / Hugging Face)
+
+**Why it moved down:**
+StarCoder2 is still useful and open-source-friendly, but it is no longer the first model I would recommend for a hackathon coding assistant. Keep it as a fallback, especially if licensing transparency matters.
+
+**Use it for:**
+- Broad language support
+- Open-source and academic projects
+- Lightweight code generation with smaller variants
+
+**Practical sizes:**
+| Model | Notes |
+|---|---|
+| StarCoder2-3B | Runs on many laptops |
+| StarCoder2-7B | Mid-range option |
+| StarCoder2-15B | Heavier local/VPS option |
+
+**Ollama:**
+```bash
+ollama pull starcoder2:7b
+ollama run starcoder2:7b
+```
+
+**Reference:** https://huggingface.co/bigcode/starcoder2-15b
 
 
 ### Quick Comparison Summary
 
-| Model | Size | Best For | Min. VRAM |
-|-------|------|----------|-----------|
-| Qwen2.5-Coder-7B | 7B | Best all-rounder for coding | 8 GB |
-| DeepSeek-Coder-V2-Lite | 16B active | Competitive coding, algorithms | 16 GB |
-| Codestral | 22B | Inline completion, autocomplete | 16 GB (quantized) |
-| StarCoder2-7B | 7B | Open-source friendly, broad language support | 14 GB |
-| Llama 3.1 8B | 8B | General reasoning + coding, Claude Code | 10 GB |
-| Phi-4 | 14B | Low-end hardware, fast responses | 8 GB |
+| Model | First choice for | Local recommendation |
+|---|---|---|
+| Llama 3.1 8B | General coding assistant | Start here |
+| Phi-4 | Lower-end hardware | Start here if Llama is slow |
+| Qwen3.5 / Qwen3-Coder-Next | Stronger coding-specific work | Use small/GGUF locally; large models via cloud |
+| DeepSeek V4 | Hard coding/reasoning | VPS/cloud for most teams |
+| Codestral | Completion-heavy workflows | Hosted or high-memory GPU |
+| StarCoder2 | Open-source-friendly fallback | 3B or 7B locally |
 
 
 <a id="claude-code-guide"></a>
@@ -317,13 +242,10 @@ This starts Ollama in the background, listening on port 11434. Keep this termina
 
 ### Step 3: Pull Your Chosen Model
 
-Download the model you want to use. For most hackers, we recommend starting with Qwen2.5-Coder or Llama 3.1:
+Download the model you want to use. For most hackers, start with Llama 3.1 8B or Phi-4. Try Qwen3.5 or Qwen3-Coder-Next only if you have a smaller/quantized build available through your local runner.
 
 ```bash
-# Recommended for coding (requires ~8 GB VRAM or 16 GB RAM)
-ollama pull qwen2.5-coder:7b
-
-# Recommended for Claude Code compatibility (best tool-calling)
+# Recommended first choice for local coding help
 ollama pull llama3.1:8b
 
 # Lightweight option for low-end hardware
@@ -375,10 +297,10 @@ $env:ANTHROPIC_API_KEY = ""
 
 ```bash
 # Launch Claude Code pointing to your local Ollama model
-claude --model qwen2.5-coder:7b
-
-# Or with Llama:
 claude --model llama3.1:8b
+
+# Or, if Llama is too slow on your machine:
+claude --model phi4
 ```
 
 You can also use the quick launch command that Ollama provides:
@@ -393,14 +315,14 @@ Claude Code works best with a large context window. Ollama defaults may be too s
 
 ```bash
 # Set context window when running a model
-OLLAMA_NUM_CTX=64000 ollama run qwen2.5-coder:7b
+OLLAMA_NUM_CTX=64000 ollama run llama3.1:8b
 ```
 
 Or add to your Ollama model configuration permanently:
 ```bash
 # Create a custom Modelfile
 cat > Modelfile << 'EOF'
-FROM qwen2.5-coder:7b
+FROM llama3.1:8b
 PARAMETER num_ctx 65536
 EOF
 
@@ -493,9 +415,9 @@ ollama serve &
 **Step 5: Download your model**
 
 ```bash
-ollama pull qwen2.5-coder:7b
-# or
 ollama pull llama3.1:8b
+# or, for lower-end hardware
+ollama pull phi4
 ```
 
 **Step 6: Expose Ollama to your local machine**
@@ -515,7 +437,7 @@ Keep this terminal open. Now your local Claude Code will see the VPS model as if
 export ANTHROPIC_BASE_URL="http://localhost:11434"
 export ANTHROPIC_AUTH_TOKEN="ollama"
 export ANTHROPIC_API_KEY=""
-claude --model qwen2.5-coder:7b
+claude --model llama3.1:8b
 ```
 
 **Step 8: Stop your pod when done**
@@ -828,9 +750,9 @@ For general programming questions, use one of the open-source models described i
 | Fastest free inference | Groq or Cerebras |
 | Best long-context free tool | Google AI Studio |
 | Best hosted NVIDIA sandbox | NVIDIA NIM |
-| Good laptop with 8+ GB VRAM | Qwen2.5-Coder-7B via Ollama + Claude Code |
+| Good laptop with 8+ GB VRAM | Llama 3.1 8B via Ollama + Claude Code |
 | Low-end laptop (no GPU) | Phi-4 via Ollama (CPU mode) |
-| Want the best possible local model | Rent RunPod GPU, run Qwen2.5-Coder-32B |
+| Want a stronger coding model | Use Qwen3.5/Qwen3-Coder-Next through a smaller GGUF build or a hosted provider |
 | Just want something that works now | Cursor free tier or Google AI Studio |
 | Using Claude Code for free (local) | Llama 3.1 8B via Ollama (best tool-call compatibility) |
 | Using Claude Code for free (cloud) | OpenRouter, Groq, or Google AI Studio |
