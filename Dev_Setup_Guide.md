@@ -5,7 +5,7 @@
 
 ## Section 1: API Keys and Credentials
 
-**Get your Etherfuse key before writing any code.** Sign up at https://devnet.etherfuse.com/ramp — it's self-service. Takes a few minutes. All other protocols below are also self-service or require no key at all.
+**Get your Etherfuse key before writing any code.** For Brazil, Etherfuse is the primary self-service path for BRL/PIX/TESOURO flows. Sign up at https://devnet.etherfuse.com/ramp — it takes a few minutes.
 
 | Protocol | Key Required | How to Get | Wait | Contact |
 |---|---|---|---|---|
@@ -17,6 +17,8 @@
 | Reflector Oracle | No | -- | -- | -- |
 | BlindPay | Yes (sandbox) | Self-service at app.blindpay.com | Instant | https://app.blindpay.com |
 | AlfredPay | Yes (sandbox) | Public sandbox keys in docs | Instant | See below |
+| Abroad Finance | Contact required | Use as Brazil ecosystem reference unless you have credentials | Unknown | https://abroad.finance |
+| Transfero | Contact required | Issuer of BRZ; sandbox/API access may require support | Unknown | https://transfero.com |
 | Trustless Work | Yes | Self-service via docs | Instant | https://docs.trustlesswork.com/trustless-work/introduction/developer-resources/request-api-key |
 
 
@@ -28,6 +30,8 @@
 - **Auth header:** `Authorization: your-api-key` with no "Bearer" prefix (see Section 4)
 - **customer_id:** UUID you generate yourself, store permanently, reuse forever (see Section 5)
 - **bankAccountId:** same pattern: you assign it, Etherfuse binds it on first use
+- **Brazil flow:** BRL via PIX ↔ TESOURO on Stellar
+- **Mexico flow also supported:** MXN via SPEI ↔ CETES on Stellar, but this Brazil guide defaults to BRL/PIX/TESOURO
 - Sandbox auto-approves bank accounts; production requires KYB review
 
 ### DeFindex
@@ -45,6 +49,16 @@ Public sandbox credentials from the AlfredPay docs — shared and intended for a
 - **api-secret:** `PwF+cDGZd37eHYZ.CVvF1/zbHCBosSo1`
 - **Auth headers:** `api-key` and `api-secret` (see Section 4)
 - **Reference:** https://alfredpay.readme.io/reference/post_customers-create-1
+
+Use Alfred Pay as an ecosystem reference for Brazil unless you already have working credentials and current API docs for your flow. Etherfuse is the safer self-service path for this guide.
+
+### Abroad Finance
+
+Abroad Finance is relevant for Brazil off-ramp/payment flows, especially USDC to BRL via PIX. Treat it as an ecosystem reference unless you have direct sandbox/API access.
+
+### Transfero
+
+Transfero is the issuer of BRZ, a BRL-denominated stablecoin available on Stellar. For this guide, BRZ is useful as a local-asset reference; do not assume self-service mint/redeem API access unless Transfero has provisioned you.
 
 
 ### BlindPay
@@ -89,8 +103,8 @@ Verified from the paltalabs registry.
 | Factory | `CDSCWE4GLNBYYTES2OCYDFQA2LLY4RBIAX6ZI32VSUXD7GO6HRPO4A32` | Yes |
 | USDC vault | `CBMVK2JK6NTOT2O4HNQAIQFJY232BHKGLIMXDVQVHIIZKDACXDFZDWHN` | Yes |
 | XLM vault | `CCLV4H7WTLJQ7ATLHBBQV2WW3OINF3FOY5XZ7VPHZO7NH3D2ZS4GFSF6` | Yes |
-| CETES vault | `CBIS5TEMTNNOTBE3WXPQUAGUEDYZZVIWAKTXEQCOUJ34OJJ3FJ5NLF2P` | Yes |
-| CETES Blend strategy | `CCP4RBDWPRNO2LWO23XFU4BBLGA73J5N3BK7EHRJUHVN33YEMMFB2MBE` | Yes |
+| CETES vault | `CBIS5TEMTNNOTBE3WXPQUAGUEDYZZVIWAKTXEQCOUJ34OJJ3FJ5NLF2P` | Mexico reference |
+| CETES Blend strategy | `CCP4RBDWPRNO2LWO23XFU4BBLGA73J5N3BK7EHRJUHVN33YEMMFB2MBE` | Mexico reference |
 
 **Verification note:** Run 1 (wrong addresses) got `Error(Storage, MissingValue)`. Run 2 (paltalabs addresses above) got `Error(WasmVm, InvalidAction)`, meaning the contract IS deployed and running; the error was a call-level issue, not an address issue.
 
@@ -115,7 +129,7 @@ Source: https://github.com/soroswap/core/blob/main/public/testnet.contracts.json
 | TestnetV2 Pool | `CCEBVDYM32YNYCVNRXQKDFFPISJJCV557CDZEIRBEE4NCV4KHPQ44HGF` |
 | CETES Pool (kaankacar) | `CAPBMXIQTICKWFPWFDJWMAKBXBPJZUKLNONQH3MLPLLBKQ643CYN5PRW` |
 
-The CETES pool is listed on https://testnet.blend.capital
+The CETES pool is listed on https://testnet.blend.capital and is kept here as a Mexico reference. For Brazil/TESOURO, verify current pools before building a swap or yield route.
 
 Source: https://github.com/blend-capital/blend-utils/blob/main/testnet.contracts.json
 
@@ -162,16 +176,24 @@ Verified from the Trustless Work registry.
 **Testnet issuer:** `GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4`
 **Mainnet / production issuer:** `GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC`
 
-| Asset Code | Name | SAC Contract ID | Notes |
+| Asset Code | Name | Issuer / Contract Reference | Notes |
 |---|---|---|---|
-| CETES | Mexican CETES Bonds | `CC72F57YTPX76HAA64JQOEGHQAPSADQWSY5DWVBR66JINPFDLNCQYHIC` | Primary tested asset |
-| CZERO | CETES Zero (0% APY) | TBD | Anchor asset = MXN |
+| TESOURO | Etherfuse TESOURO | issuer `GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4` on testnet | Primary Brazil asset: BRL via PIX ↔ TESOURO |
+| CETES | Etherfuse CETES | `CC72F57YTPX76HAA64JQOEGHQAPSADQWSY5DWVBR66JINPFDLNCQYHIC` | Mexico reference: MXN via SPEI ↔ CETES |
+| CZERO | CETES Zero (0% APY) | TBD | Mexico reference |
 
 > SAC contract IDs can be derived from the issuer + asset code using the Stellar SDK: `Contract.fromAsset(asset, networkPassphrase)`. Ask a mentor or check Stellar Lab for pre-computed addresses.
 
-**Testnet limitation:** There is no CETES/USDC liquidity on the testnet SDEX. `pathPaymentStrictSend` will always fail with `op_no_path`. You can test the trustline flow, but not the actual buy/sell swap.
+**Testnet limitation:** Do not assume TESOURO/USDC or CETES/USDC liquidity on the testnet SDEX. If `pathPaymentStrictSend` fails with `op_no_path`, the issue is probably missing testnet liquidity, not your transaction builder. You can test the trustline flow, but the reliable acquisition path is the anchor onramp.
 
-> To get testnet CETES: use the Etherfuse API onramp process — the same flow you'd build in production. The sandbox auto-approves, minting CETES directly to your testnet wallet. This IS the faucet. Swapping via Soroswap, Aquarius, or SDEX may or may not work on testnet; onramp is the reliable path.
+> To get testnet TESOURO: use the Etherfuse API onramp process — the same flow you'd build in production. The sandbox auto-approves, minting TESOURO directly to your testnet wallet. This IS the faucet. Swapping via Soroswap, Aquarius, or SDEX may or may not work on testnet; onramp is the reliable path.
+
+### Brazil Assets
+
+| Asset Code | Name | Stellar Issuer | Notes |
+|---|---|---|---|
+| BRZ | Brazilian Digital Token by Transfero | `GABMA6FPH3OJXNTGWO7PROF7I5WPQUZOB4BLTBTP4FK6QV7HWISLIEO2` | Mainnet BRL stablecoin reference. Verified on Stellar Expert. |
+| TESOURO | Etherfuse TESOURO | `GCRYUGD5NVARGXT56XEZI5CIFCQETYHAPQQTHO2O3IQZTHDH4LATMYWC` on mainnet / `GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4` on testnet | Primary Etherfuse Brazil ramp asset. |
 
 
 ## Section 4: Authentication Patterns
@@ -237,7 +259,7 @@ The `create customer` and `create bank account` requests will fail if the public
 
 ### Etherfuse: quote endpoint is POST with three direction types
 
-`POST /ramp/quote` accepts three directions via `quoteAssets.type`: `onramp` (MXN → crypto), `offramp` (crypto → MXN), and `swap` (crypto → crypto, Stellar and Solana only). Swap target must be a stablebond; source is typically USDC.
+`POST /ramp/quote` accepts three directions via `quoteAssets.type`: `onramp` (BRL → crypto), `offramp` (crypto → BRL), and `swap` (crypto → crypto, Stellar and Solana only). Swap target must be a stablebond; source is typically USDC.
 
 
 ### Etherfuse: response bodies are snake_case, request bodies are camelCase
@@ -246,8 +268,8 @@ API responses use `snake_case` (`presigned_url`, `bank_account_id`, `exchange_ra
 
 ### Etherfuse: onramp and offramp order response shapes differ
 
-- Onramp: response includes `depositClabe` — the CLABE where the user sends MXN via SPEI
-- Offramp: response does NOT include a CLABE. It includes `burnTransaction` (pre-built unsigned XDR) and `statusPage`. The burn transaction must be signed with the user's wallet and submitted to Stellar. Do not build a custom burn transaction — always use the one Etherfuse provides.
+- Onramp: Brazil responses include PIX payment instructions (`pixKey`, `pixCode`, and key type). Mexico responses include `depositClabe` for SPEI.
+- Offramp: response does NOT include the final fiat transfer details. It includes or later exposes a `burnTransaction` (pre-built unsigned XDR) and `statusPage`. The burn transaction must be signed with the user's wallet and submitted to Stellar. Do not build a custom burn transaction — always use the one Etherfuse provides.
 
 In sandbox, the offramp `burnTransaction` may not appear immediately in the creation response. Poll `GET /ramp/order/{id}` until it appears.
 
@@ -275,14 +297,14 @@ Etherfuse only accepts classic Stellar addresses (G...). Passkey smart wallets u
 ### Etherfuse: quoteAssets is an object with a type discriminator
 
 ```typescript
-// Onramp (MXN → crypto)
-quoteAssets: { type: 'onramp', sourceAsset: 'MXN', targetAsset: 'CETES:GC3CW7...' }
+// Onramp (BRL → crypto)
+quoteAssets: { type: 'onramp', sourceAsset: 'BRL', targetAsset: 'TESOURO:GC3CW7...' }
 
-// Offramp (crypto → MXN)
-quoteAssets: { type: 'offramp', sourceAsset: 'CETES:GC3CW7...', targetAsset: 'MXN' }
+// Offramp (crypto → BRL)
+quoteAssets: { type: 'offramp', sourceAsset: 'TESOURO:GC3CW7...', targetAsset: 'BRL' }
 
 // Swap (crypto → crypto, Stellar/Solana only)
-quoteAssets: { type: 'swap', sourceAsset: 'USDC:GA5ZS...', targetAsset: 'CETES:GC3CW7...' }
+quoteAssets: { type: 'swap', sourceAsset: 'USDC:GA5ZS...', targetAsset: 'TESOURO:GC3CW7...' }
 ```
 
 Stellar assets use `CODE:ISSUER` format. The `blockchain` field is also required in the quote request.
@@ -318,9 +340,9 @@ toAmount: Number(raw.toAmount) || Number(raw.destinationAmount),
 
 If the destination wallet has no trustline for the target asset, `POST /ramp/order` returns a clear error: "Your wallet does not have a trustline for [ASSET]. Please add a trustline before creating this order." Set up trustlines before calling order creation, not after getting this error.
 
-### Etherfuse: sandbox onramp limit is 500 MXN
+### Etherfuse: sandbox onramp limits are currency-specific
 
-Onramp quotes with `sourceAmount` above 500 MXN return `SandboxAmountExceeded`. Use amounts of 500 or less when testing.
+Mexico sandbox quotes above 500 MXN have returned `SandboxAmountExceeded` in prior testing. For Brazil, start with small BRL test amounts and check the current sandbox response before wiring a fixed max into your UI.
 
 ### Etherfuse: duplicate order constraint
 
@@ -521,7 +543,7 @@ These are things that don't work smoothly yet or aren't documented. If you hit a
 ### Things that still need manual help
 
 - **Etherfuse sandbox key:** self-service at https://devnet.etherfuse.com/ramp. Takes a few minutes.
-- **Testnet CETES balance:** use the Etherfuse onramp flow to mint testnet CETES. The sandbox auto-approves and mints directly to your wallet. This IS the faucet. See Section 3.
+- **Testnet TESOURO balance:** use the Etherfuse onramp flow to mint testnet TESOURO. The sandbox auto-approves and mints directly to your wallet. This IS the faucet. See Section 3.
 
 ### Things the docs don't cover (save yourself the debugging time)
 

@@ -1,7 +1,7 @@
 # Stellar Development Foundation Hackathon: AI Tools Guide
 ## Using Open-Source AI Models for Coding
 
-**Prepared for: Hack+ Alebrije | CDMX 2026**
+**Prepared for: Stellar AI Guide Brazil**
 **Date: March 2026**
 
 
@@ -15,6 +15,8 @@
 6. [About Stella: Stellar's AI Assistant](#stella)
 
 
+<a id="introduction"></a>
+
 ## 1. Introduction
 
 As a hacker at this event, you have several options when it comes to AI-powered coding assistance:
@@ -26,6 +28,8 @@ As a hacker at this event, you have several options when it comes to AI-powered 
 
 This guide focuses on helping you get set up with open-source models from Hugging Face (the world's largest platform for sharing and downloading AI models) so you can code with AI entirely for free.
 
+
+<a id="top-models"></a>
 
 ## 2. Top Open-Source Coding Models on Hugging Face
 
@@ -273,6 +277,8 @@ ollama run phi4
 | Phi-4 | 14B | Low-end hardware, fast responses | 8 GB |
 
 
+<a id="claude-code-guide"></a>
+
 ## 3. How to Use a Local Model with Claude Code
 
 Claude Code is the AI coding assistant you can run in your terminal. By default it uses Anthropic's Claude models in the cloud, but it can be pointed to a locally running open-source model instead, meaning you can use Claude Code completely free with no API credits required.
@@ -428,6 +434,8 @@ source ~/.zshrc
 - **Close other heavy applications** while running local models to free up RAM and VRAM.
 
 
+<a id="vps-guide"></a>
+
 ## 4. Running Your Model on a VPS
 
 If your laptop doesn't have enough GPU power to run a capable model locally, you can rent a cloud server (VPS) with a GPU for just a few dollars and run the model there. You then connect to it from your laptop as if it were running locally.
@@ -540,21 +548,40 @@ To avoid charges, go to the RunPod dashboard and stop or terminate your pod when
 | H100 | 80 GB | Largest models | ~$2.50-4.00/hr |
 
 
+<a id="free-alternatives"></a>
+
 ## 5. Free AI Coding Alternatives
 
-If you don't want to set up a local model or a VPS, there are several free cloud AI options — including one that rivals the best paid models available today.
+If you don't want to set up a local model or rent a GPU VPS, you can still build with AI for free by combining free API tiers, model gateways, cloud notebooks, and startup credit programs. Treat these as a stack:
+
+1. Use **Stella** for Stellar-specific questions.
+2. Use **Cursor**, **GitHub Copilot Free**, or **Google AI Studio** when you need a tool immediately.
+3. Use **Groq**, **Cerebras**, **OpenRouter**, **NVIDIA NIM**, or **xAI Grok** when you need API access.
+4. Use **Hugging Face Spaces**, **Kaggle**, **Colab**, or **Lightning AI** when you need free hosted compute.
+5. Use **AWS Activate**, **Google for Startups**, **Microsoft Founders Hub**, or AI startup accelerators if your project becomes a real startup.
+
+> Important: Free AI limits change often. Before relying on any provider for a demo, check the provider's current dashboard limits and keep a fallback model ready.
 
 
-### 5a. NVIDIA Nemotron 3 Super — best free cloud model right now
+### 5a. Best no-card options for a hackathon
 
-NVIDIA Nemotron 3 Super is a 120B parameter model available for free through OpenRouter. It has a 262,144-token context window and delivers leading results on SWE-Bench Verified (real-world coding tasks), TerminalBench, and AIME 2025. Model page: https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free
+These are the fastest ways to get usable AI access without setting up local inference.
 
-**Key facts:**
-- Provider: OpenRouter (model ID: `nvidia/nemotron-3-super-120b-a12b:free`)
-- Parameters: 120B
-- Context window: 262,144 tokens
-- Cost: $0 per million input tokens, $0 per million output tokens
-- Strong on: SWE-Bench Verified, TerminalBench, complex reasoning
+| Need | Best option | Why | Signup |
+|---|---|---|---|
+| Best quick coding chat | Cursor free tier | Built into a VS Code-like editor | https://cursor.com |
+| Best Stellar-specific help | Stella | Trained on Stellar docs and ecosystem material | https://developers.stellar.org |
+| Best long-context browser tool | Google AI Studio | Gemini models are strong for large pasted files | https://aistudio.google.com |
+| Best low-latency API | Groq | Very fast inference for chat and agent loops | https://console.groq.com |
+| Best free model gateway | OpenRouter | One API for many free models with `:free` IDs | https://openrouter.ai |
+| Best high-throughput API | Cerebras | Strong for batch generation and fast token output | https://cloud.cerebras.ai |
+| Best NVIDIA-hosted sandbox | NVIDIA NIM | OpenAI-compatible API for NVIDIA-hosted models | https://build.nvidia.com |
+| Best model demo hosting | Hugging Face Spaces | Free community hosting for Gradio/Streamlit demos | https://huggingface.co/spaces |
+
+
+### 5b. OpenRouter: one API for many free models
+
+OpenRouter is useful because it gives you one API key and one endpoint for many providers. Free models usually have `:free` at the end of the model ID.
 
 **Claude Code config:**
 ```bash
@@ -563,32 +590,38 @@ export ANTHROPIC_API_KEY="your-openrouter-key"
 claude --model nvidia/nemotron-3-super-120b-a12b:free
 ```
 
-Other free models on OpenRouter follow the same `:free` suffix pattern. Notable options for coding:
+Good free-model categories to try:
 
-| Model ID | Params | Context |
+| Category | Try this when | Example model pattern |
 |---|---|---|
-| `meta-llama/llama-3.3-70b-instruct:free` | 70B | 131K |
-| `nvidia/nemotron-3-nano-30b-a3b:free` | 30B | 256K |
-| `arcee-ai/trinity-large-preview:free` | large | 131K |
-| `minimax/minimax-m2.5:free` | large | 196K |
+| Large coding model | You need code edits, debugging, or architecture help | Qwen Coder or Nemotron coding models with `:free` |
+| Reasoning model | You need planning, math, or multi-step debugging | DeepSeek R1-style models with `:free` |
+| General chat | You need explanations and project guidance | Llama 3.3 70B-style models with `:free` |
+| Multimodal | You need image or screenshot analysis | Qwen VL-style models with `:free` |
 
-The full list of free models is at https://openrouter.ai/models?q=free. Any model with `:free` in the ID works with the same `ANTHROPIC_BASE_URL` config above.
+Browse the current free list at https://openrouter.ai/models?q=free.
 
-Sign up for a free OpenRouter account at https://openrouter.ai — no credit card required for free models.
+**When OpenRouter is a good fit:**
+- Testing several models quickly
+- Switching models if one free model is rate-limited
+- Using a single API key in demos
+- Routing Claude Code or other OpenAI-compatible clients to free hosted models
 
-> Privacy note: Prompts and completions are logged by the provider. Don't use these free cloud models for sensitive or proprietary code. For that, use local Ollama or a paid plan.
+**When not to use it:**
+- Sensitive code or private keys
+- Hard production SLAs
+- Anything that cannot tolerate free-tier rate limits
 
 
-### 5b. Free cloud APIs — no credit card required
+### 5c. Groq and Cerebras: fastest free inference
 
-| Provider | Best models for coding | Free limits | Signup |
+Groq and Cerebras are specialized inference providers. They are especially useful for hackathon apps because they respond quickly and expose OpenAI-compatible APIs.
+
+| Provider | Best for | Notes | Signup |
 |---|---|---|---|
-| **OpenRouter** | Nemotron 3 Super 120B, Llama 3.3 70B, Mistral Small 24B, Qwen3, Gemma 3 27B | 20 req/min, 50 req/day (1,000/day with $10 lifetime topup) | https://openrouter.ai |
-| **Groq** | Llama 3.1 8B (14,400 req/day), Llama 3.3 70B (1,000/day), Llama 4 Scout (1,000/day, 30K tok/min) | Generous daily limits per model | https://console.groq.com |
-| **Google AI Studio** | Gemini 2.5 Flash (1M ctx), Gemma 3 (1B-27B) | 20-500 req/day depending on model, 250K tokens/min | https://aistudio.google.com |
-| **Mistral Codestral** | Codestral (purpose-built for code) | 30 req/min, 2,000 req/day | https://console.mistral.ai |
-| **Cerebras** | Llama 3.1 8B, GPT-OSS-120B | 30 req/min, 60K tokens/min, 900 req/hour | https://cloud.cerebras.ai |
-| **GitHub Models** | GPT-4o, Claude, DeepSeek-R1, DeepSeek-V3, Llama 4, Phi-4, Grok 3 | Low token limits; good for quick tests | https://github.com/marketplace/models |
+| **Groq** | Low-latency chat, agents, repeated prompts | Very fast responses; useful for interactive demos | https://console.groq.com |
+| **Cerebras** | High-throughput generation and batch tasks | Strong token throughput; useful for synthetic data and long generations | https://cloud.cerebras.ai |
+| **SambaNova** | Large open-weight reasoning models | Often offers trial credits for larger models | https://cloud.sambanova.ai |
 
 **Claude Code config for Groq:**
 ```bash
@@ -597,37 +630,111 @@ export ANTHROPIC_API_KEY="your-groq-key"
 claude --model llama-3.3-70b-versatile
 ```
 
-**Claude Code config for Google AI Studio:**
+Use Groq when your app needs a fast response for every user interaction. Use Cerebras when you need to generate a lot of text quickly, such as test data, summaries, or batch analysis.
+
+
+### 5d. Google AI Studio: free long-context Gemini access
+
+Google AI Studio is one of the easiest free tools for large-codebase analysis. It is especially helpful when you want to paste a contract, frontend file, backend route, logs, and an error message into one prompt.
+
+**Claude Code config for Gemini's OpenAI-compatible endpoint:**
 ```bash
 export ANTHROPIC_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
 export ANTHROPIC_API_KEY="your-gemini-key"
 claude --model gemini-2.0-flash
 ```
 
-**Claude Code config for Mistral Codestral:**
+Good uses:
+- Explaining large code files
+- Reviewing API design
+- Summarizing docs
+- Creating implementation plans
+- Debugging logs with lots of context
+
+Avoid using the free tier for secrets, customer data, or private production code unless your team has reviewed the data policy.
+
+
+### 5e. NVIDIA NIM: free NVIDIA-hosted model APIs
+
+NVIDIA NIM provides hosted inference microservices through https://build.nvidia.com. It is useful when you want to test models deployed on NVIDIA infrastructure without setting up your own GPU server.
+
+**Why builders use it:**
+- OpenAI-compatible API
+- Hosted models from NVIDIA and partner ecosystems
+- Good path from cloud prototyping to later self-hosting with NIM containers
+- Useful for agent and tool-use experiments
+
+**OpenAI-compatible configuration pattern:**
 ```bash
-export ANTHROPIC_BASE_URL="https://api.mistral.ai/v1"
-export ANTHROPIC_API_KEY="your-mistral-key"
-claude --model codestral-latest
+export OPENAI_BASE_URL="https://integrate.api.nvidia.com/v1"
+export OPENAI_API_KEY="your-nvidia-api-key"
 ```
 
-> Privacy note: Free tiers on OpenRouter, Groq, and Google AI Studio (outside the EU) log your prompts for model improvement. For proprietary code, use local Ollama, a paid plan, or an EU-based provider.
+Check the current free credit amount and model catalog in the NVIDIA dashboard before the event. NIM credits and model availability can change.
 
 
-### 5c. Free trial credits — enough for a full hackathon weekend
+### 5f. xAI Grok credits: useful, but understand the tradeoff
 
-These providers give you signup credits with no ongoing cost:
+xAI's developer console is at https://console.x.ai. The Grok API can be useful for reasoning-heavy demos and products that benefit from Grok's ecosystem integrations.
 
-| Provider | Free Credit | Notable models | Signup |
-|---|---|---|---|
-| **SambaNova Cloud** | $5 for 3 months | Llama 4, Llama 3.3 70B, DeepSeek-R1, Qwen | https://cloud.sambanova.ai |
-| **Scaleway** | 1M free tokens | DeepSeek, Gemma, Llama, Mistral, Pixtral | https://www.scaleway.com/en/llm-inference/ |
-| **Nebius** | $1 | Various open models | https://studio.nebius.ai |
-| **Hyperbolic** | $1 | DeepSeek, Llama, Qwen, Pixtral | https://app.hyperbolic.xyz |
-| **Fireworks** | $1 | Various open models | https://fireworks.ai |
+Some xAI credit programs involve a tradeoff: you may receive recurring credits in exchange for allowing API inputs and outputs to be used for model improvement. That can be fine for non-sensitive prototypes, but it is not appropriate for private code, customer data, wallet secrets, API keys, legal documents, or unreleased product strategy.
+
+Use Grok credits for:
+- Public-data summarization
+- News or social-content analysis
+- Non-sensitive reasoning features
+- Demo workloads where training-data reuse is acceptable
+
+Do not use Grok free-credit data sharing for:
+- Proprietary source code
+- User PII
+- Financial data
+- Private keys, seed phrases, or wallet credentials
+- Anything your team would not want in a provider training pipeline
 
 
-### 5d. Free IDE tools (no API key needed)
+### 5g. Hugging Face: models, demos, and free community hosting
+
+Hugging Face is not just a model download site. For hackathons, it gives you three useful free paths:
+
+| Tool | Use it for | Notes |
+|---|---|---|
+| **Model Hub** | Finding open-source models | Best place to compare model cards, licenses, and examples |
+| **Spaces** | Hosting a Gradio or Streamlit demo | Good for public demos without managing servers |
+| **Serverless Inference API** | Testing smaller community models | Can have cold starts and variable latency |
+
+Use Hugging Face Spaces when your team wants a live demo URL quickly. Use the Model Hub when checking whether a model's license allows commercial or hackathon use.
+
+
+### 5h. Free GPU notebooks and sandboxes
+
+If you need a GPU but do not need a permanent server, use a notebook or cloud sandbox.
+
+| Platform | Best for | Notes |
+|---|---|---|
+| **Google Colab** | Simple notebooks and quick experiments | Sessions are temporary; connect Google Drive for files |
+| **Kaggle Notebooks** | Dataset work, ML experiments, TPU/GPU access | Good free compute for notebook workflows |
+| **Lightning AI Studios** | More complete cloud dev environments | Useful when available because it feels closer to a full VM |
+| **Hugging Face Spaces ZeroGPU** | Public AI demos | Good for Gradio/Streamlit apps that need occasional GPU access |
+
+Use these for model experiments, fine-tuning tests, embeddings, dataset cleaning, and demos. For running a full backend reliably during judging, a VPS or managed API is usually easier.
+
+
+### 5i. Free trial credits and startup programs
+
+If your hackathon project turns into a real startup, apply for startup credits. These are often much more valuable than public free tiers.
+
+| Program | Best for | Notes |
+|---|---|---|
+| **AWS Activate** | Bedrock, SageMaker, general cloud infrastructure | Higher tiers usually require partner, accelerator, or investor affiliation |
+| **Google for Startups Cloud Program** | Vertex AI, Gemini, Firebase, Google Cloud | Strong fit for AI-native and Firebase-backed apps |
+| **Microsoft Founders Hub** | Azure, Azure OpenAI, GitHub tooling | Lower-friction entry for early-stage startups |
+| **Together AI Startup Accelerator** | Open model inference and fine-tuning | Useful for AI-native products using open models |
+
+For a hackathon, do not depend on startup credits being approved immediately. Use public free tiers for the weekend, then apply for startup programs after you have a working prototype and a clear project description.
+
+
+### 5j. Free IDE tools (no API key needed)
 
 ### Cursor (https://cursor.com)
 
@@ -665,8 +772,10 @@ GitHub Copilot now has a free tier:
 - Free access to Gemini 2.5 Flash (1M context window)
 - Great for pasting large amounts of code and getting explanations
 - No subscription required, just a Google account
-- See the table in Section 5b for exact request limits
+- Check the Google AI Studio dashboard for the current free request and token limits
 
+
+<a id="stella"></a>
 
 ## 6. About Stella: Stellar's AI Assistant
 
@@ -714,16 +823,17 @@ For general programming questions, use one of the open-source models described i
 
 | Situation | Recommended Tool |
 |-----------|-----------------|
-| Best free model, period | NVIDIA Nemotron 3 Super via OpenRouter (120B, 262K context, free) |
 | Stellar-specific questions | Stella (developers.stellar.org) |
-| Best free for coding specifically | Mistral Codestral (2,000 req/day, code-optimized) |
-| Fastest free inference | Groq — Llama 3.1 8B (14,400 req/day) |
+| Best free model gateway | OpenRouter free models |
+| Fastest free inference | Groq or Cerebras |
+| Best long-context free tool | Google AI Studio |
+| Best hosted NVIDIA sandbox | NVIDIA NIM |
 | Good laptop with 8+ GB VRAM | Qwen2.5-Coder-7B via Ollama + Claude Code |
 | Low-end laptop (no GPU) | Phi-4 via Ollama (CPU mode) |
 | Want the best possible local model | Rent RunPod GPU, run Qwen2.5-Coder-32B |
 | Just want something that works now | Cursor free tier or Google AI Studio |
 | Using Claude Code for free (local) | Llama 3.1 8B via Ollama (best tool-call compatibility) |
-| Using Claude Code for free (cloud) | NVIDIA Nemotron 3 Super via OpenRouter |
+| Using Claude Code for free (cloud) | OpenRouter, Groq, or Google AI Studio |
 
 
 *Document prepared by the Stellar Development Foundation for hackathon participants.*

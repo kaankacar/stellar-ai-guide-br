@@ -10,7 +10,7 @@ This is the single most expensive ambiguity in a Stellar build session. If you s
 **If you want a self-custodial wallet, say so explicitly:**
 
 Bad:
-> Build me a Stellar wallet with CETES integration.
+> Build me a Stellar wallet with TESOURO integration.
 
 Good:
 > Build a self-custodial browser wallet that generates and stores its own BIP-39 mnemonic. No browser extension required. Users create an account with a password. The password runs through PBKDF2 to derive an AES-GCM key, which encrypts the mnemonic and stores it in localStorage. On login, the user's password decrypts the mnemonic in memory. All transaction signing happens locally; no external signer, no Freighter, no xBull.
@@ -32,6 +32,7 @@ Context for this project:
 - USDC issuer (testnet): GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5
   (Use this one for DeFindex compatibility. The Circle testnet issuer is different and won't share liquidity.)
 - USDC issuer (mainnet): GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
+- Brazil assets: Etherfuse TESOURO via PIX; Transfero BRZ issuer GABMA6FPH3OJXNTGWO7PROF7I5WPQUZOB4BLTBTP4FK6QV7HWISLIEO2.
 - [Add any project-specific notes: Etherfuse customer_id, DeFindex vault address, etc.]
 ```
 
@@ -87,6 +88,7 @@ Create a `CLAUDE.md` at your repo root with this content. Every Claude Code sess
 - Auth header: `Authorization: your-api-key` (no Bearer prefix)
 - Sandbox simulation: POST to /ramp/order/fiat_received to advance order state
 - Indexing delay: wait 3-10s after order creation before querying status
+- Brazil flow: BRL via PIX ↔ TESOURO
 
 ### DeFindex
 - Auth header: `Authorization: Bearer your-api-key`

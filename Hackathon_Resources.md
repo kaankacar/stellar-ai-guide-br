@@ -16,19 +16,23 @@ Everything you need before writing a line of code. For the full reference (API k
 | Friendbot (fund testnet accounts) | `https://friendbot.stellar.org` |
 | Testnet USDC issuer (Circle) | `GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5` |
 | Testnet USDC issuer (Blend) | `GATALTGTWIOT6BUDBCZM3Q4OQ4BO2COLOAZ7IYSKPLC2PMSOPPGF5V56` |
+| Etherfuse TESOURO issuer (testnet) | `GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4` |
+| Transfero BRZ issuer (mainnet) | `GABMA6FPH3OJXNTGWO7PROF7I5WPQUZOB4BLTBTP4FK6QV7HWISLIEO2` |
 
 ### API Keys to Get Early
 
 - **Etherfuse sandbox key:** self-service at https://devnet.etherfuse.com/ramp
 - **Soroswap:** no key needed on testnet
 - **DeFindex:** self-service signup at https://docs.defindex.io/api-integration-guide/api#generate-your-api-key
-- **BlindPay / AlfredPay:** check their respective docs for sandbox access
+- **Alfred Pay / Abroad Finance / Transfero:** useful Brazil ecosystem references, but do not assume the same self-service developer flow as Etherfuse
 - **Trustless Work:** self-service at https://docs.trustlesswork.com/trustless-work/introduction/developer-resources/request-api-key
 
 ### Things Worth Knowing Upfront
 
 - Testnet USDC has two different issuers depending on which protocol you're using; they don't share liquidity. Check which one your protocol expects before swapping.
 - Etherfuse: each end-user of your app gets a permanent `customer_id` and `bank_account_id`. Generate them once per user, store them, reuse them forever. Never create duplicates.
+- Etherfuse Brazil uses BRL, PIX, and TESOURO. PIX sandbox support exists, but the regional starter pack flags it as still rough around the edges.
+- Transfero issues BRZ, a BRL-denominated stablecoin. Use it as ecosystem context unless you have direct Transfero sandbox/API access.
 - Stellar memos max out at 28 bytes. Anything longer silently fails.
 - SDK v14 renamed several core types. If copying older examples, check the migration notes.
 
@@ -42,21 +46,22 @@ Everything you need before writing a line of code. For the full reference (API k
 | **DevRel Experiment** (kaankacar) | Controlled comparison of Claude Code with vs. without resources, including full test results | https://github.com/kaankacar/stellar-devrel-experiment |
 
 
-## 2. Regional Starter Pack (Mexico + Latin America)
+## 2. Regional Starter Pack (Brazil + Latin America)
 
-The fastest path to a working integration with Mexican peso rails.
+The fastest path to a working integration with Brazilian real rails.
 
 **Repo:** https://github.com/ElliotFriend/regional-starter-pack
 
-A SvelteKit app that serves as a reference implementation for SEP-compliant anchor integrations, paired with a portable TypeScript anchor library. The `/src/lib/anchors/` folder contains individual client implementations for each anchor (Etherfuse, AlfredPay, BlindPay), each following the same SEP interface. It's framework-agnostic; copy it into any TypeScript or Node project and it works without the SvelteKit wrapper.
+A SvelteKit app that serves as a reference implementation for SEP-compliant anchor integrations, paired with a portable TypeScript anchor library. The `/src/lib/anchors/` folder contains individual client implementations and shared SEP modules. For Brazil, the practical self-service path is Etherfuse: BRL to TESOURO via PIX.
 
 ### Anchor Providers Included
 
 | Anchor | What it does |
 |---|---|
-| **Etherfuse** | MXN to CETES (Mexican government bonds) via SPEI. Mexico-first. |
-| **AlfredPay** | MXN to USDC via SPEI |
-| **BlindPay** | Global, MXN to USDB via SPEI |
+| **Etherfuse** | BRL to TESOURO via PIX. Primary Brazil path and the only provider here with a self-service developer sandbox flow. |
+| **Alfred Pay** | Latin America ramp provider. Relevant to Brazil, but use as an ecosystem reference unless you have credentials. |
+| **Abroad Finance** | Brazil off-ramp infrastructure for USDC to BRL via PIX. Relevant reference; not the primary self-service path. |
+| **Transfero** | Issuer of BRZ, a BRL stablecoin on Stellar. Useful asset/context provider; sandbox/API access may require contacting the team. |
 
 ### SEP Protocols Implemented
 
@@ -74,10 +79,10 @@ Includes pre-configured MCP servers for Claude Code (Svelte docs + Etherfuse doc
 Repo: https://github.com/briwylde08/ya-otter-save
 Live demo: https://ya-otter-save.vercel.app/
 
-A testnet demo showing a complete MXN savings flow composed from three protocols:
+A testnet demo showing how an Etherfuse ramp, the Stellar DEX, and Blend can compose in one app. It is useful as an architecture reference even though the original flow was written for another local rail:
 
 ```
-MXN (bank) → Etherfuse on-ramp → CETES → Stellar DEX swap → USDC → Blend deposit (yield)
+BRL (bank) → Etherfuse on-ramp → TESOURO → Stellar DEX swap → USDC → Blend deposit (yield)
                                                            ← reverse path for withdrawal
 ```
 
@@ -109,8 +114,8 @@ Four focused reference apps built with Claude Code, each paired with a `BUILD_RE
 | [ai-freighter-integration](https://github.com/carstenjacobsen/ai-freighter-integration) | Freighter wallet connection, XLM balance display, send payments, transaction history |
 | [ai-soroswap-integration](https://github.com/carstenjacobsen/ai-soroswap-integration) | Multi-DEX swap aggregator routing across Soroswap, Phoenix, Aqua, and SDEX simultaneously |
 | [ai-defindex-integration](https://github.com/carstenjacobsen/ai-defindex-integration) | DeFindex yield vault deposits and withdrawals, dfToken balance, custom vault address support |
-| [ai-passkeys-integration](https://github.com/carstenjacobsen/ai-passkeys-integration) | WebAuthn passkey smart wallet with Etherfuse MXN ↔ CETES on/off-ramp |
-| [ai-etherfuse-integration](https://github.com/carstenjacobsen/ai-etherfuse-integration) | Full Etherfuse ramp integration (MXN ↔ MXNe) combined with DeFindex yield and Freighter wallet in a single three-tab app |
+| [ai-passkeys-integration](https://github.com/carstenjacobsen/ai-passkeys-integration) | WebAuthn passkey smart wallet with Etherfuse ramp patterns; adapt the examples to BRL/TESOURO |
+| [ai-etherfuse-integration](https://github.com/carstenjacobsen/ai-etherfuse-integration) | Full Etherfuse ramp integration pattern combined with DeFindex yield and Freighter wallet in a single three-tab app |
 
 
 ## 4. Ecosystem Discovery

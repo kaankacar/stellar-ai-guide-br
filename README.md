@@ -1,6 +1,6 @@
-# Hack+ Alebrije | CDMX 2026 — Developer Guide
+# Stellar AI Guide Brazil — Developer Guide
 
-Mexico has one of the most active SPEI networks in the world, a massive remittance corridor with the US, and millions of people who move money through channels that are slow, expensive, or both. Stellar is built for exactly this, and this hackathon is a chance to build something that actually matters for people here.
+Brazil has one of the most active instant-payment systems in the world, with PIX moving money 24/7 across consumers, businesses, and financial apps. Stellar is built for exactly this kind of real-world money movement: fast settlement, low fees, local assets, and programmable rails that can connect builders to global liquidity.
 
 This repo is a collection of guides put together by the SDF DevRel team to help you move fast. The goal is simple: every developer at this event should have the same shot at building something real, regardless of whether they have a paid AI subscription, years of Stellar experience, or a high-end laptop.
 
@@ -8,9 +8,9 @@ This repo is a collection of guides put together by the SDF DevRel team to help 
 
 **About to open Claude Code for the first time?** Start with `Starter_Prompts.md`. It has a ready-to-paste protocol context block, the correct way to describe what you're building so Claude doesn't default to the wrong architecture, and a CLAUDE.md template for Stellar projects.
 
-**Building with Mexican peso rails?** The regional starter pack (`Hackathon_Resources.md`) is the fastest path. It has Etherfuse (MXN to CETES via SPEI), AlfredPay (MXN to USDC via SPEI), and BlindPay already wired up as a portable TypeScript library you can drop into any Node project. Before you use Etherfuse, read its section in `Dev_Setup_Guide.md`. There are several non-obvious gotchas (auth format, customer_id permanence, sandbox simulation) that have cost developers hours.
+**Building with Brazilian real rails?** The regional starter pack (`Hackathon_Resources.md`) is the fastest path. For Brazil, use Etherfuse as the primary self-service path: BRL to TESOURO via PIX, with the same portable TypeScript anchor library you can drop into any Node project. Alfred Pay, Abroad Finance, and Transfero are relevant Brazil ecosystem references too, but the starter pack treats them as secondary/honorable-mention providers because they do not expose the same self-service developer flow as Etherfuse.
 
-**Don't have a paid AI subscription?** Start with `Free_AI_Setup.md`. The fastest path is NVIDIA Nemotron 3 Super via OpenRouter — a 120B parameter model with a 262K context window, strong on SWE-Bench, completely free. The guide also covers Groq (Llama 3.1 8B at 14,400 req/day), Mistral Codestral (2,000 req/day, code-optimized), Google AI Studio, and a table of providers offering free trial credits ($1-$5). If you'd rather run models locally, it covers six open-source models via Ollama and how to rent a GPU server on RunPod or Vast.ai for a few dollars.
+**Don't have a paid AI subscription?** Start with `Free_AI_Setup.md`. It covers free API tiers, OpenRouter, Groq, Cerebras, Google AI Studio, NVIDIA NIM, xAI Grok credits, Hugging Face Spaces, free GPU notebooks, and local open-source models via Ollama.
 
 **About to write code?** Read `Dev_Setup_Guide.md` first. Five minutes here saves hours later.
 
@@ -41,13 +41,13 @@ The fastest way to avoid the most common Claude mistake at a hackathon: building
 
 Everything you need before writing code, in one place.
 
-**API keys:** All protocols that require a key have self-service signup. Etherfuse: https://devnet.etherfuse.com/ramp. DeFindex, AlfredPay, BlindPay and Trustless Work: see Dev_Setup_Guide.md Section 1. Soroswap, Phoenix, Aquarius, and Blend require no key.
+**API keys:** Etherfuse is the important one to get early for Brazil because it is the primary self-service PIX/TESOURO path: https://devnet.etherfuse.com/ramp. DeFindex and Trustless Work are also self-service. Soroswap, Phoenix, Aquarius, and Blend require no key.
 
 **Testnet contract addresses:** Verified DeFindex, Soroswap, Blend and Trustless Work addresses are included. Aquarius and Reflector Oracle link to their live registries. Phoenix is the only protocol still TBD.
 
 **Auth patterns:** This is where most developers lose time. Etherfuse uses `Authorization: your-api-key` with no Bearer prefix. DeFindex uses `Authorization: Bearer your-api-key`. Trustless Work uses `Authorization: x-api-key: your-api-key`. They're opposites and none are documented clearly. The guide has correct code snippets for all three.
 
-**Testnet asset registry:** Testnet USDC has multiple issuers that don't share liquidity; pick the wrong one and swaps silently fail. The guide covers all three (Circle, Blend, and Etherfuse — each separate), plus all five Etherfuse stablebond assets (CETES, USTRY, KTB, CARN, CZERO) with their testnet and mainnet issuer addresses.
+**Testnet asset registry:** Testnet USDC has multiple issuers that don't share liquidity; pick the wrong one and swaps silently fail. The guide keeps the existing USDC issuer unchanged and adds Brazil-specific references for Etherfuse TESOURO and Transfero BRZ.
 
 **Critical gotchas** (pulled from 60 build runs):
 - Etherfuse `customer_id` and `bankAccountId` are per end-user: generate once per user, store, reuse forever — never per session
@@ -68,7 +68,7 @@ Everything you need before writing code, in one place.
 
 ## Hackathon_Resources.md
 
-**Regional starter pack** (Mexico + Latin America): https://github.com/ElliotFriend/regional-starter-pack
+**Regional starter pack** (Brazil + Latin America): https://github.com/ElliotFriend/regional-starter-pack
 A SvelteKit app with a portable TypeScript anchor library. The `/src/lib/anchors/` folder is framework-agnostic; copy it into any TypeScript or Node project and it works without SvelteKit. Covers SEP-1, SEP-6, SEP-10, SEP-12, SEP-24, SEP-31, and SEP-38. Also ships with pre-configured MCP servers for Claude Code (Svelte docs + Etherfuse docs) so Claude understands the stack out of the box.
 
 **DeFi reference implementation**: https://github.com/kaankacar/stellar-defi-app
@@ -78,8 +78,8 @@ A full mainnet DeFi dashboard integrating Blend (lending/borrowing with health f
 - [ai-freighter-integration](https://github.com/carstenjacobsen/ai-freighter-integration): Freighter wallet connection, balance display, send payments, transaction history
 - [ai-soroswap-integration](https://github.com/carstenjacobsen/ai-soroswap-integration): Multi-DEX swap aggregator across Soroswap, Phoenix, Aqua, and SDEX
 - [ai-defindex-integration](https://github.com/carstenjacobsen/ai-defindex-integration): DeFindex yield vault deposits/withdrawals and dfToken balance tracking
-- [ai-passkeys-integration](https://github.com/carstenjacobsen/ai-passkeys-integration): WebAuthn passkey smart wallet with Etherfuse MXN ↔ CETES on/off-ramp
-- [ai-etherfuse-integration](https://github.com/carstenjacobsen/ai-etherfuse-integration): Full Etherfuse ramp (MXN ↔ MXNe) + DeFindex yield + Freighter wallet in one app
+- [ai-passkeys-integration](https://github.com/carstenjacobsen/ai-passkeys-integration): WebAuthn passkey smart wallet with Etherfuse ramp patterns that can be adapted to BRL/TESOURO
+- [ai-etherfuse-integration](https://github.com/carstenjacobsen/ai-etherfuse-integration): Full Etherfuse ramp pattern plus DeFindex yield and Freighter wallet in one app
 
 **Community resources:**
 - Stellar Hackathon FAQ (briwylde08): https://github.com/briwylde08/stellar-hackathon-faq

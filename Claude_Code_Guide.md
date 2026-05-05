@@ -180,7 +180,7 @@ Run this smoke test sequence and report pass/fail for each step:
 
 1. Create wallet: click "Create New Wallet", note the generated mnemonic phrase
 2. Friendbot: call Friendbot for the new wallet's public key, confirm XLM balance appears
-3. Trustline: click "Add CETES trustline", confirm the transaction succeeds on-chain
+3. Trustline: click "Add TESOURO trustline", confirm the transaction succeeds on-chain
 4. Lock/Unlock: click "Lock Wallet", re-enter the password, confirm the app returns to the dashboard
 5. Balance display: confirm XLM balance is visible in the wallet panel
 

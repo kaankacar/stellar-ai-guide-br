@@ -1,6 +1,6 @@
-# Recommended AI Tools for Hack+ Alebrije | CDMX 2026
+# Recommended AI Tools for Stellar AI Guide Brazil
 
-A curated map of the AI tool ecosystem available during the hackathon. Covers Stellar-native integrations, coding assistants, and multi-agent frameworks. For local/open-source model setup, see `AI_Coding_Guide.md`.
+A curated map of the AI tool ecosystem available during the hackathon. Covers Stellar-native integrations, coding assistants, and multi-agent frameworks. For local/open-source model setup, see `Free_AI_Setup.md`.
 
 
 ## 1. Stellar-Native AI Tools
