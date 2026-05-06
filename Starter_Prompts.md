@@ -33,7 +33,7 @@ Context for this project:
   (Use this one for DeFindex compatibility. The Circle testnet issuer is different and won't share liquidity.)
 - USDC issuer (mainnet): GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN
 - Brazil assets: Etherfuse TESOURO via PIX; Transfero BRZ issuer GABMA6FPH3OJXNTGWO7PROF7I5WPQUZOB4BLTBTP4FK6QV7HWISLIEO2.
-- [Add any project-specific notes: Etherfuse customer_id, DeFindex vault address, etc.]
+- [Add any project-specific notes: Etherfuse customerId, DeFindex vault address, etc.]
 ```
 
 
@@ -84,7 +84,7 @@ Create a `CLAUDE.md` at your repo root with this content. Every Claude Code sess
 
 ## Protocol-specific notes
 ### Etherfuse
-- customer_id: [your customer_id] — permanent, never generate a new one
+- customerId: [your customerId] — permanent, never generate a new one
 - Auth header: `Authorization: your-api-key` (no Bearer prefix)
 - Sandbox simulation: POST to /ramp/order/fiat_received to advance order state
 - Indexing delay: wait 3-10s after order creation before querying status

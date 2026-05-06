@@ -28,7 +28,7 @@
 - **Production base URL:** `https://api.etherfuse.com`
 - **Validate your key:** `GET /ramp/me` returns org name + KYB timestamp
 - **Auth header:** `Authorization: your-api-key` with no "Bearer" prefix (see Section 4)
-- **customer_id:** UUID you generate yourself, store permanently, reuse forever (see Section 5)
+- **customerId:** UUID you generate yourself, store permanently, reuse forever (see Section 5)
 - **bankAccountId:** same pattern: you assign it, Etherfuse binds it on first use
 - **Brazil flow:** BRL via PIX ↔ TESOURO on Stellar
 - **Mexico flow also supported:** MXN via SPEI ↔ CETES on Stellar, but this Brazil guide defaults to BRL/PIX/TESOURO
@@ -245,26 +245,77 @@ headers: {
 These are the issues that blocked developers for 30-120 minutes each across 60 build runs. Know them upfront.
 
 
-### Etherfuse: customer_id and bankAccountId are per end-user
+### Etherfuse: customerId and bankAccountId are per end-user
 
-Each end-user of your app needs their own `customer_id` and `bankAccountId`. These are permanent per user — generate once, store in your database, reuse forever. Never generate a new one per request or per session. If you generate duplicates, you'll get "Bank account not found" errors with no useful debug info.
+Each end-user of your app needs their own `customerId` and `bankAccountId`. These are permanent per user — generate once, store in your database, reuse forever. Never generate a new one per request or per session. If you generate duplicates, you'll get "Bank account not found" errors with no useful debug info.
 
 You assign both IDs yourself (they're UUIDs you generate). Etherfuse binds them on first use.
 
 
 ### Etherfuse: a public key can only be registered to one customer
 
-The `create customer` and `create bank account` requests will fail if the public key (G... address) was already registered in a previous call — even in sandbox. If you're re-running your setup flow, reuse the same `customer_id` and `bankAccountId` rather than trying to re-register.
+The `create customer` and `create bank account` requests will fail if the public key (G... address) was already registered in a previous call — even in sandbox. If you're re-running your setup flow, reuse the same `customerId` and `bankAccountId` rather than trying to re-register.
 
 
 ### Etherfuse: quote endpoint is POST with three direction types
 
 `POST /ramp/quote` accepts three directions via `quoteAssets.type`: `onramp` (BRL → crypto), `offramp` (crypto → BRL), and `swap` (crypto → crypto, Stellar and Solana only). Swap target must be a stablebond; source is typically USDC.
 
+For Brazil onramp/offramp quotes, the sandbox expects the request to include a UUID `quoteId`, the onboarded `customerId`, `blockchain: "stellar"`, the user's classic Stellar `walletAddress`, a `quoteAssets` object, and `sourceAmount`. In live sandbox testing, `destinationAmount` was not accepted for the TESOURO → BRL off-ramp quote; use `sourceAmount`.
+
+```typescript
+// Onramp quote: BRL -> TESOURO
+{
+  quoteId: crypto.randomUUID(),
+  customerId,
+  blockchain: "stellar",
+  walletAddress: userPublicKey, // G... address
+  quoteAssets: {
+    type: "onramp",
+    sourceAsset: "BRL",
+    targetAsset: "TESOURO:GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4"
+  },
+  sourceAmount: "10"
+}
+
+// Offramp quote: TESOURO -> BRL
+{
+  quoteId: crypto.randomUUID(),
+  customerId,
+  blockchain: "stellar",
+  walletAddress: userPublicKey, // G... address
+  quoteAssets: {
+    type: "offramp",
+    sourceAsset: "TESOURO:GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4",
+    targetAsset: "BRL"
+  },
+  sourceAmount: "1"
+}
+```
+
 
 ### Etherfuse: response bodies are snake_case, request bodies are camelCase
 
 API responses use `snake_case` (`presigned_url`, `bank_account_id`, `exchange_rate`). Request bodies use `camelCase` (`bankAccountId`, `quoteId`, `sourceAmount`). This is consistent throughout the API but easy to miss when reading responses and building requests side by side.
+
+### Etherfuse: hosted onboarding is required before order creation
+
+Live sandbox testing showed that a quote can succeed for a generated `customerId`, but `POST /ramp/order` can still fail with `Proxy account not found` if the hosted onboarding flow has not been completed for the matching `customerId`, `bankAccountId`, and `publicKey`.
+
+Hosted onboarding URL generation succeeded with this request shape:
+
+```typescript
+{
+  customerId,
+  bankAccountId,
+  publicKey: userPublicKey, // G... address
+  blockchain: "stellar",
+  accountType: "business"
+}
+```
+
+In live testing, `accountType: "business"` returned `200`; `individual`, `company`, and uppercase values were rejected.
+
 
 ### Etherfuse: onramp and offramp order response shapes differ
 
@@ -320,7 +371,18 @@ GET  /ramp/orders  ← paginated list (plural)
 POST /ramp/orders  ← also returns paginated list, ignores body — wrong endpoint
 ```
 
-The create endpoint requires `orderId`, `bankAccountId`, `cryptoWalletId`, and `quoteId`.
+The create endpoint requires `orderId`, `bankAccountId`, `quoteId`, and a wallet reference. For hackathon builders using a normal Stellar wallet address, pass `publicKey`, not `cryptoWalletId`:
+
+```typescript
+{
+  orderId: crypto.randomUUID(),
+  bankAccountId,
+  publicKey: userPublicKey, // G... address
+  quoteId
+}
+```
+
+`cryptoWalletId` is a UUID wallet record ID. Do not put a `G...` public key in `cryptoWalletId`; the sandbox parses that field as a UUID.
 
 
 ### Etherfuse: quote response uses sourceAmount/destinationAmount
@@ -336,9 +398,11 @@ toAmount: Number(raw.toAmount) || Number(raw.destinationAmount),
 
 `GET /lookup/exchange_rate` (no auth required) returns USD conversion rates for all supported currencies. The response has a multi-source structure — each rate is aggregated from several providers and the top-level `rate` field is the final aggregated value.
 
-### Etherfuse: Etherfuse validates trustlines before creating an order
+### Etherfuse: Stellar onramp trustlines can use the claim flow
 
-If the destination wallet has no trustline for the target asset, `POST /ramp/order` returns a clear error: "Your wallet does not have a trustline for [ASSET]. Please add a trustline before creating this order." Set up trustlines before calling order creation, not after getting this error.
+For Stellar onramps, pass `walletAddress` in the quote request. Etherfuse docs describe an automatic wallet setup path: if the wallet lacks the trustline or does not exist on-chain yet, the quote fee can include the one-time onboarding cost, and the completed order can include a `stellarClaimTransaction` unsigned XDR for the user to sign.
+
+For offramps and swaps, assume the wallet must already be funded and have the relevant trustline before the order can complete.
 
 ### Etherfuse: sandbox onramp limits are currency-specific
 
@@ -359,12 +423,24 @@ Submitting KYC data programmatically puts the customer in `proposed` state, not 
 For integration testing without full KYC, register a wallet with `claimOwnership: true` — this links the wallet's KYC to your organization's KYB status and auto-approves it immediately.
 
 
-### Etherfuse: assets endpoint response shape varies
+### Etherfuse: assets endpoint requires wallet-aware query params
 
-`GET /ramp/assets` returns either a bare array or `{ assets: [...] }` depending on query parameters. Normalize on read:
+`GET /ramp/assets` requires query parameters in the current sandbox. For Brazil on Stellar, this live-tested form returned TESOURO:
+
+```http
+GET /ramp/assets?blockchain=stellar&currency=brl&wallet=<G_ADDRESS>
+```
+
+The response may be either a bare array or `{ assets: [...] }` depending on query parameters and API version. Normalize on read:
 
 ```typescript
 const list = Array.isArray(data) ? data : (data.assets || data.data || []);
+```
+
+The TESOURO entry should include:
+
+```text
+TESOURO:GC3CW7EDYRTWQ635VDIGY6S4ZUF5L6TQ7AA4MWS7LEQDBLUSZXV7UPS4
 ```
 
 

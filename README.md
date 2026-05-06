@@ -10,6 +10,8 @@ This repo is a collection of guides put together by the SDF DevRel team to help 
 
 **Building with Brazilian real rails?** The regional starter pack (`Hackathon_Resources.md`) is the fastest path. For Brazil, use Etherfuse as the primary self-service path: BRL to TESOURO via PIX, with the same portable TypeScript anchor library you can drop into any Node project. Alfred Pay, Abroad Finance, and Transfero are relevant Brazil ecosystem references too, but the starter pack treats them as secondary/honorable-mention providers because they do not expose the same self-service developer flow as Etherfuse.
 
+**Need a PIX-specific walkthrough?** Read `PIX_Guide.md`. It explains the practical BRL via PIX <-> TESOURO flow, including Etherfuse sandbox setup, hosted onboarding, TESOURO asset lookup, on-ramp/off-ramp order flow, Stellar claim transactions, sandbox simulation endpoints, and the gotchas that usually block builders.
+
 **Don't have a paid AI subscription?** Start with `Free_AI_Setup.md`. It now prioritizes free cloud options first: OpenRouter, Groq, Cerebras, Google AI Studio, NVIDIA NIM, xAI Grok credits, Hugging Face Spaces, free GPU notebooks, and startup credits. Local Ollama setup is still included, but it is intentionally at the end because most hackers should not spend the event fighting laptop inference.
 
 **About to write code?** Read `Dev_Setup_Guide.md` first. Five minutes here saves hours later.
@@ -19,9 +21,10 @@ This repo is a collection of guides put together by the SDF DevRel team to help 
 1. `Starter_Prompts.md` before your first Claude Code session
 2. `Free_AI_Setup.md` if you need a free AI setup
 3. `Dev_Setup_Guide.md` before writing any code
-4. `Hackathon_Resources.md` to orient yourself in the Stellar ecosystem
-5. `Claude_Code_Guide.md` for commands, parallel agents, and browser automation
-6. `Recommended_AI_Tools.md` to explore what else is available
+4. `PIX_Guide.md` if your app touches BRL, PIX, TESOURO, or a Brazil on/off-ramp
+5. `Hackathon_Resources.md` to orient yourself in the Stellar ecosystem
+6. `Claude_Code_Guide.md` for commands, parallel agents, and browser automation
+7. `Recommended_AI_Tools.md` to explore what else is available
 
 ## Starter_Prompts.md
 
@@ -50,10 +53,11 @@ Everything you need before writing code, in one place.
 **Testnet asset registry:** Testnet USDC has multiple issuers that don't share liquidity; pick the wrong one and swaps silently fail. The guide keeps the existing USDC issuer unchanged and adds Brazil-specific references for Etherfuse TESOURO and Transfero BRZ.
 
 **Critical gotchas** (pulled from 60 build runs):
-- Etherfuse `customer_id` and `bankAccountId` are per end-user: generate once per user, store, reuse forever — never per session
+- Etherfuse `customerId` and `bankAccountId` are per end-user: generate once per user, store, reuse forever — never per session
 - Etherfuse: a G... address can only be registered to one customer; re-registration fails even in sandbox
 - Etherfuse sandbox orders don't progress automatically: you have to POST to `/ramp/order/fiat_received` to simulate fiat arriving
 - Etherfuse has a 3-10 second indexing delay after order creation: immediate status queries return 404
+- Etherfuse hosted onboarding must be completed before order creation works reliably; otherwise `POST /ramp/order` can return `Proxy account not found`
 - Etherfuse response envelopes are inconsistent across endpoints: the guide includes a normalizer
 - Soroban: always simulate before sending (`simulateTransaction` + `assembleTransaction` before `sendTransaction`)
 - `sendTransaction` returns PENDING, not success: you need to poll (or use `rpc.Server.pollTransaction`)
@@ -94,6 +98,14 @@ A full mainnet DeFi dashboard integrating Blend (lending/borrowing with health f
 - A First Look: Nethermind's SPP (Stellar Private Payments, ZK-based)
 
 All links are in the file.
+
+## PIX_Guide.md
+
+The practical Brazil payment guide for this repo. It focuses on the self-service Etherfuse path: BRL via PIX <-> TESOURO on Stellar.
+
+**What it covers:** sandbox env vars, Etherfuse auth format, stable `customerId` and `bankAccountId` handling, hosted onboarding, TESOURO asset lookup, on-ramp/off-ramp quotes and orders, PIX payment instructions, Stellar claim transactions, and manual sandbox state transitions.
+
+**Provider scope:** Etherfuse is the recommended implementation path. Transfero, Abroad Finance, and Alfred Pay are included as ecosystem notes, not as assumed drop-in APIs.
 
 ## Claude_Code_Guide.md
 

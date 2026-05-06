@@ -30,7 +30,7 @@ Everything you need before writing a line of code. For the full reference (API k
 ### Things Worth Knowing Upfront
 
 - Testnet USDC has two different issuers depending on which protocol you're using; they don't share liquidity. Check which one your protocol expects before swapping.
-- Etherfuse: each end-user of your app gets a permanent `customer_id` and `bank_account_id`. Generate them once per user, store them, reuse them forever. Never create duplicates.
+- Etherfuse: each end-user of your app gets a permanent `customerId` and `bankAccountId`. Generate them once per user, store them, reuse them forever. Never create duplicates.
 - Etherfuse Brazil uses BRL, PIX, and TESOURO. PIX sandbox support exists, but the regional starter pack flags it as still rough around the edges.
 - Transfero issues BRZ, a BRL-denominated stablecoin. Use it as ecosystem context unless you have direct Transfero sandbox/API access.
 - Stellar memos max out at 28 bytes. Anything longer silently fails.
